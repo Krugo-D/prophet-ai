@@ -1,0 +1,34 @@
+{
+  "name": "prophet-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start:dev": "tsx watch src/main.ts",
+    "populate": "tsx src/scripts/populate-wallet-data.ts",
+    "populate:markets": "tsx src/scripts/populate-from-markets.ts",
+    "backfill": "tsx src/scripts/backfill-wallets.ts",
+    "calculate-pnl": "tsx src/scripts/calculate-pnl.ts",
+    "refresh-categories": "tsx src/scripts/refresh-category-summaries.ts",
+    "populate-summaries": "tsx src/scripts/populate-market-summaries.ts",
+    "update-categories": "tsx src/scripts/update-market-categories.ts"
+  },
+  "dependencies": {
+    "@dome-api/sdk": "^0.16.0",
+    "@nestjs/common": "^11.1.10",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.10",
+    "@nestjs/platform-express": "^11.1.10",
+    "@privy-io/server-auth": "^1.32.5",
+    "@supabase/supabase-js": "^2.89.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  }
+}

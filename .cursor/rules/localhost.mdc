@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+Ports are fixed and non-negotiable.
+Frontend MUST run on localhost:3002 (FRONTEND_PORT=3002).
+Backend MUST run on localhost:4002 (BACKEND_PORT=4002).
+Read ports only from .env.
+Do not assume defaults or auto-increment ports.
+Fail if the port is unavailable.
+Start services only via package.json scripts.
