@@ -13,7 +13,8 @@
     "calculate-pnl": "tsx src/scripts/calculate-pnl.ts",
     "refresh-categories": "tsx src/scripts/refresh-category-summaries.ts",
     "populate-summaries": "tsx src/scripts/populate-market-summaries.ts",
-    "update-categories": "tsx src/scripts/update-market-categories.ts"
+    "update-categories": "tsx src/scripts/update-market-categories.ts",
+    "cleanup-uncategorized": "tsx src/scripts/cleanup-uncategorized.ts"
   },
   "dependencies": {
     "@dome-api/sdk": "^0.16.0",
