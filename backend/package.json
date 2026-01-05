@@ -1,23 +1,25 @@
 {
-  "name": "prophet-backend",
+  "name": "prophet",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
     "start:dev": "tsx watch src/main.ts",
+    "start:prod": "node dist/main.js",
     "populate": "tsx src/scripts/populate-wallet-data.ts",
     "populate:markets": "tsx src/scripts/populate-from-markets.ts",
     "backfill": "tsx src/scripts/backfill-wallets.ts",
     "calculate-pnl": "tsx src/scripts/calculate-pnl.ts",
     "refresh-categories": "tsx src/scripts/refresh-category-summaries.ts",
     "populate-summaries": "tsx src/scripts/populate-market-summaries.ts",
-    "update-categories": "tsx src/scripts/update-market-categories.ts",
-    "cleanup-uncategorized": "tsx src/scripts/cleanup-uncategorized.ts"
+    "update-categories": "tsx src/scripts/update-market-categories.ts"
   },
   "dependencies": {
     "@dome-api/sdk": "^0.16.0",
+    "@google-cloud/aiplatform": "^6.0.0",
+    "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^11.1.10",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.10",

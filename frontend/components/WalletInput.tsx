@@ -3,40 +3,36 @@
 import { useState } from 'react';
 
 interface WalletInputProps {
-  onWalletSubmit: (wallet: string) => void;
-  isLoading?: boolean;
+  onSearch: (wallet: string) => void;
 }
 
-export default function WalletInput({ onWalletSubmit, isLoading }: WalletInputProps) {
+export default function WalletInput({ onSearch }: WalletInputProps) {
   const [wallet, setWallet] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (wallet.trim()) {
-      onWalletSubmit(wallet.trim());
+      onSearch(wallet.trim());
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
       <div className="flex gap-2">
         <input
           type="text"
           value={wallet}
           onChange={(e) => setWallet(e.target.value)}
           placeholder="Enter wallet address (0x...)"
-          className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-400"
-          disabled={isLoading}
+          className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1a1a3a] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
         />
         <button
           type="submit"
-          disabled={isLoading || !wallet.trim()}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-medium transition-colors shadow-lg"
         >
-          {isLoading ? 'Loading...' : 'View Profile'}
+          Search
         </button>
       </div>
     </form>
   );
 }
-

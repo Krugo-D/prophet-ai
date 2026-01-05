@@ -40,12 +40,49 @@ export class WalletProfileService {
       });
     }
 
+    // Get ML profile for this wallet
+    const { data: mlProfile } = await supabase
+      .from('wallet_interest_profiles')
+      .select('interest_vector, last_updated')
+      .eq('wallet_address', walletAddress.toLowerCase())
+      .single();
+
+    let interestVector: number[] = [];
+    if (mlProfile?.interest_vector) {
+      if (typeof mlProfile.interest_vector === 'string') {
+        const clean = (mlProfile.interest_vector as string).replace(/[\[\]]/g, '');
+        interestVector = clean.split(',').map(v => parseFloat(v));
+      } else {
+        interestVector = mlProfile.interest_vector as unknown as number[];
+      }
+    }
+
+    let topSemanticMarkets = [];
+    if (interestVector.length > 0) {
+      const { data: matches } = await supabase.rpc('match_markets', {
+        query_embedding: interestVector,
+        match_threshold: 0.1,
+        match_count: 5,
+      });
+      topSemanticMarkets = matches || [];
+    }
+
     return {
       wallet: walletAddress,
       categories,
       totalInteractions,
       totalVolume,
       totalPnL,
+      mlProfile: mlProfile ? {
+        interest_vector: interestVector,
+        last_updated: mlProfile.last_updated,
+        topSemanticMarkets: topSemanticMarkets.map(m => ({
+          title: m.title,
+          similarity: m.similarity,
+          category: m.category
+        })),
+        globalUniquenessScore: Math.random() * 0.4 + 0.6, // Placeholder for POC
+      } : undefined,
     };
   }
 }

@@ -7,6 +7,8 @@ import { MarketsModule } from './markets/markets.module';
 import { PnlModule } from './pnl/pnl.module';
 import { WalletProfileModule } from './wallet-profile/wallet-profile.module';
 import { WalletTransactionsModule } from './wallet-transactions/wallet-transactions.module';
+import { MlModule } from './ml/ml.module';
+import { B2BModule } from './b2b/b2b.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { WalletTransactionsModule } from './wallet-transactions/wallet-transacti
     WalletProfileModule,
     PnlModule,
     MarketsModule,
+    MlModule,
+    B2BModule,
   ],
 })
 export class AppModule {}

@@ -12,30 +12,55 @@ async function refreshCategorySummaries() {
   console.log('=== Refreshing Category Summaries ===\n');
 
   try {
-    // Get all unique wallets that have market summaries
-    const { data: allSummaries, error: summariesError } = await supabase
-      .from('wallet_market_summary')
-      .select('wallet_address');
-    
-    if (summariesError) {
-      throw new Error(`Failed to fetch wallet summaries: ${summariesError.message}`);
+    // Clear existing summaries to remove old AI categories
+    console.log('Clearing old category summaries...');
+    const { error: clearError } = await supabase
+      .from('wallet_category_summary')
+      .delete()
+      .neq('wallet_address', ''); // Delete all rows
+
+    if (clearError) throw clearError;
+    const allWallets: string[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('wallet_market_summary')
+        .select('wallet_address')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (error) {
+        throw new Error(`Failed to fetch wallet addresses: ${error.message}`);
+      }
+
+      if (!data || data.length === 0) {
+        hasMore = false;
+      } else {
+        data.forEach(s => allWallets.push(s.wallet_address));
+        if (data.length < pageSize) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      }
     }
     
     // Get unique wallet addresses
-    const wallets = Array.from(new Set((allSummaries || []).map(s => s.wallet_address)))
-      .map(wallet_address => ({ wallet_address }));
+    const uniqueWallets = Array.from(new Set(allWallets));
 
-    if (!wallets || wallets.length === 0) {
+    if (uniqueWallets.length === 0) {
       console.log('No wallets found. Exiting.');
       await app.close();
       return;
     }
 
-    console.log(`Found ${wallets.length} unique wallets.`);
+    console.log(`Found ${uniqueWallets.length} unique wallets.`);
 
-    for (let i = 0; i < wallets.length; i++) {
-      const walletAddress = wallets[i].wallet_address;
-      console.log(`[${i + 1}/${wallets.length}] Refreshing category summaries for wallet: ${walletAddress}`);
+    for (let i = 0; i < uniqueWallets.length; i++) {
+      const walletAddress = uniqueWallets[i];
+      console.log(`[${i + 1}/${uniqueWallets.length}] Refreshing category summaries for wallet: ${walletAddress}`);
 
       // Get all market summaries for this wallet
       const { data: summaries, error: summariesError } = await supabase
@@ -107,4 +132,3 @@ async function refreshCategorySummaries() {
 }
 
 refreshCategorySummaries();
-

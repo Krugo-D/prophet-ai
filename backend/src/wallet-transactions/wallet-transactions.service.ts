@@ -19,6 +19,7 @@ export interface WalletTransaction {
 export interface MarketInfo {
   market_slug: string;
   title: string;
+  description?: string;
   condition_id?: string;
   category: string;
   tags: string[];
@@ -30,6 +31,8 @@ export interface MarketInfo {
   end_time?: number;
   completed_time?: number;
   volume_total?: number;
+  image_url?: string;
+  outcomes?: any;
 }
 
 @Injectable()
@@ -96,6 +99,7 @@ export class WalletTransactionsService {
       .upsert({
         market_slug: market.market_slug,
         title: market.title,
+        description: market.description,
         condition_id: market.condition_id,
         category: market.category,
         tags: market.tags,
@@ -107,6 +111,8 @@ export class WalletTransactionsService {
         end_time: market.end_time ? new Date(market.end_time * 1000).toISOString() : null,
         completed_time: market.completed_time ? new Date(market.completed_time * 1000).toISOString() : null,
         volume_total: market.volume_total,
+        image_url: market.image_url,
+        outcomes: market.outcomes,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'market_slug',

@@ -10,6 +10,11 @@ export default () => ({
   database: {
     url: process.env.DATABASE_URL,
   },
+  google: {
+    projectId: process.env.GOOGLE_PROJECT_ID,
+    location: process.env.GOOGLE_LOCATION || 'us-central1',
+    apiKey: process.env.GOOGLE_API_KEY,
+  },
   BACKEND_PORT: parseInt(process.env.BACKEND_PORT || '4002', 10),
 });
 

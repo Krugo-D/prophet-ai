@@ -3,110 +3,145 @@ import 'reflect-metadata';
 import { AppModule } from '../app.module';
 import { SupabaseService } from '../database/supabase.service';
 
-function getCategoryFromTags(tags: string[]): string {
-  if (!tags || tags.length === 0) return 'Uncategorized';
+const CATEGORY_KEYWORDS: { [key: string]: string } = {
+  'Politics': 'Politics',
+  'Political': 'Politics',
+  'Election': 'Politics',
+  'Trump': 'Politics',
+  'Harris': 'Politics',
+  'Biden': 'Politics',
+  'White House': 'Politics',
+  'Senate': 'Politics',
+  'House of Reps': 'Politics',
+  'Congress': 'Politics',
+  'Democrat': 'Politics',
+  'Republican': 'Politics',
+  'GOP': 'Politics',
+  'Governor': 'Politics',
+  'Mayor': 'Politics',
+  'France': 'Politics',
+  'Government': 'Politics',
+  'Sports': 'Sports',
+  'NFL': 'Sports',
+  'NBA': 'Sports',
+  'MLB': 'Sports',
+  'NHL': 'Sports',
+  'Soccer': 'Sports',
+  'Football': 'Sports',
+  'Basketball': 'Sports',
+  'Baseball': 'Sports',
+  'Tennis': 'Sports',
+  'Golf': 'Sports',
+  'Super Bowl': 'Sports',
+  'Champions League': 'Sports',
+  'F1': 'Sports',
+  'UFC': 'Sports',
+  'Crypto': 'Crypto',
+  'Bitcoin': 'Crypto',
+  'Ethereum': 'Crypto',
+  'Solana': 'Crypto',
+  'Coinbase': 'Crypto',
+  'Binance': 'Crypto',
+  'DeFi': 'Crypto',
+  'NFT': 'Crypto',
+  'Entertainment': 'Entertainment',
+  'Movie': 'Entertainment',
+  'TV': 'Entertainment',
+  'Oscars': 'Entertainment',
+  'Grammys': 'Entertainment',
+  'Box Office': 'Entertainment',
+  'Netflix': 'Entertainment',
+  'Disney': 'Entertainment',
+  'Celebrities': 'Entertainment',
+  'Economics': 'Economics',
+  'Inflation': 'Economics',
+  'Fed ': 'Economics',
+  'Interest Rates': 'Economics',
+  'GDP': 'Economics',
+  'Recession': 'Economics',
+  'Stock Market': 'Economics',
+  'Economy': 'Economics',
+  'Earnings': 'Economics',
+  'Finance': 'Economics',
+  'Tech': 'Tech',
+  'Technology': 'Tech',
+  'Apple': 'Tech',
+  'Google': 'Tech',
+  'Meta': 'Tech',
+  'Amazon': 'Tech',
+  'Microsoft': 'Tech',
+  'AI': 'AI',
+  'OpenAI': 'AI',
+  'ChatGPT': 'AI',
+  'Anthropic': 'AI',
+  'Science': 'Science',
+  'Space': 'Science',
+  'NASA': 'Science',
+  'SpaceX': 'Science',
+  'Health': 'Health',
+  'COVID': 'Health',
+  'FDA': 'Health',
+  'Culture': 'Culture',
+  'Business': 'Business',
+  'Elon Musk': 'Elon Musk',
+  'Tesla': 'Elon Musk',
+  'X.com': 'Elon Musk',
+  'Twitter': 'Elon Musk',
+};
 
-  const categoryKeywords: { [key: string]: string } = {
-    'Politics': 'Politics',
-    'Political': 'Politics',
-    'Election': 'Politics',
-    'Sports': 'Sports',
-    'Sport': 'Sports',
-    'Crypto': 'Crypto',
-    'Cryptocurrency': 'Crypto',
-    'Bitcoin': 'Crypto',
-    'Ethereum': 'Crypto',
-    'Entertainment': 'Entertainment',
-    'Movie': 'Entertainment',
-    'TV': 'Entertainment',
-    'Economics': 'Economics',
-    'Economic': 'Economics',
-    'Finance': 'Economics',
-    'Financial': 'Economics',
-    'Tech': 'Tech',
-    'Technology': 'Tech',
-    'AI': 'AI',
-    'OpenAI': 'AI',
-    'Science': 'Science',
-    'Health': 'Health',
-    'Culture': 'Culture',
-    'Music': 'Music',
-    'Business': 'Business',
-    'Economy': 'Economics',
-    'Big Tech': 'Big Tech',
-    'Elon Musk': 'Elon Musk',
-    'Gov Shutdown': 'Politics',
-    'Rewards': 'Rewards',
-    'France': 'Politics',
-    'Earnings': 'Economics',
-  };
+function determineCategory(title: string, tags: string[]): string {
+  const combinedText = `${title} ${tags.join(' ')}`.toLowerCase();
 
-  for (const tag of tags) {
-    for (const [keyword, category] of Object.entries(categoryKeywords)) {
-      if (tag.toLowerCase().includes(keyword.toLowerCase())) {
-        return category;
-      }
+  for (const [keyword, category] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (combinedText.includes(keyword.toLowerCase())) {
+      return category;
     }
   }
 
-  return tags[0] || 'Uncategorized';
+  // Fallback to tags if they don't look like AI clusters
+  for (const tag of tags) {
+    if (!tag.includes('/') && tag.length < 20 && tag.length > 2) {
+      return tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+    }
+  }
+
+  return 'Miscellaneous';
 }
 
 async function updateMarketCategories() {
   const app = await NestFactory.createApplicationContext(AppModule);
-
   const supabaseService = app.get(SupabaseService);
   const supabase = supabaseService.getClient();
 
-  console.log('=== Updating Market Categories ===\n');
+  console.log('=== Restoring Human-Readable Categories ===\n');
 
   try {
-    // Get all markets with tags but null category
     const { data: markets, error: marketsError } = await supabase
       .from('markets')
-      .select('market_slug, tags, category')
-      .is('category', null);
+      .select('market_slug, title, tags');
 
-    if (marketsError) {
-      throw new Error(`Failed to fetch markets: ${marketsError.message}`);
-    }
+    if (marketsError) throw marketsError;
 
-    if (!markets || markets.length === 0) {
-      console.log('No markets with null categories found.');
-      await app.close();
-      return;
-    }
-
-    console.log(`Found ${markets.length} markets to update.`);
+    console.log(`Found ${markets.length} markets to process.`);
 
     let updated = 0;
     for (const market of markets) {
-      const category = getCategoryFromTags(market.tags || []);
+      const category = determineCategory(market.title || '', market.tags || []);
       
       const { error: updateError } = await supabase
         .from('markets')
         .update({ category })
         .eq('market_slug', market.market_slug);
 
-      if (updateError) {
-        console.error(`Error updating ${market.market_slug}: ${updateError.message}`);
-      } else {
-        updated++;
-        if (updated % 100 === 0) {
-          console.log(`  Updated ${updated}/${markets.length} markets...`);
-        }
-      }
+      if (!updateError) updated++;
     }
 
-    console.log(`\n✓ Updated ${updated} market categories.`);
-    console.log('\n=== Market Category Update Complete! ===');
-    console.log('\nNote: Run "yarn refresh-categories" to update category summaries.');
+    console.log(`\n✓ Restored ${updated} human categories.`);
   } catch (error: any) {
-    console.error('Error during category update:', error.message || error);
+    console.error('Error:', error.message);
   } finally {
     await app.close();
   }
 }
 
 updateMarketCategories();
-

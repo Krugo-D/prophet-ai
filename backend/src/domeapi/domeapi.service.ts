@@ -170,6 +170,17 @@ export class DomeapiService {
     }
   }
 
+  async getMarketPrice(tokenId: string) {
+    try {
+      return await this.client.polymarket.markets.getMarketPrice({
+        token_id: tokenId,
+      });
+    } catch (error) {
+      console.error(`Error fetching price for token ${tokenId}:`, error);
+      return null;
+    }
+  }
+
   async getAllWalletActivity(walletAddress: string, maxResults: number = 1000) {
     let allActivities = [];
     let offset = 0;
