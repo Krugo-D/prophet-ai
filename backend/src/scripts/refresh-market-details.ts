@@ -103,8 +103,4 @@ async function refreshMarketDetails() {
   await app.close();
 }
 
-  console.log('\n=== Refresh Complete! ===');
-  await app.close();
-}
-
 refreshMarketDetails();
