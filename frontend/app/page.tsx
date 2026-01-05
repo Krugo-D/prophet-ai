@@ -54,7 +54,7 @@ export default function Home() {
     return (
       <>
         <Header />
-        <ConnectScreen onImpersonate={(addr) => setImpersonatedWallet(addr)} />
+        <ConnectScreen />
         <Footer />
       </>
     );

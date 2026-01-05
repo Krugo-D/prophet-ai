@@ -14,7 +14,7 @@ export default function ForYouPage() {
     return (
       <>
         <Header />
-        <ConnectScreen onImpersonate={(addr) => setImpersonatedWallet(addr)} />
+        <ConnectScreen />
         <Footer />
       </>
     );

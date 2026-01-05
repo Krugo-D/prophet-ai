@@ -218,7 +218,7 @@ export default function WalletProfile({ data }: WalletProfileProps) {
                 contentStyle={{ backgroundColor: '#1a1a3a', border: '1px solid #2d2d4f', borderRadius: '12px', color: '#ffffff' }}
                 itemStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                 labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
-                formatter={(val: number) => `$${val.toLocaleString()}`}
+                formatter={(val: any) => `$${Number(val).toLocaleString()}`}
               />
               <Bar dataKey="volume" fill="#6366f1" radius={[6, 6, 0, 0]} />
             </BarChart>
@@ -243,9 +243,9 @@ export default function WalletProfile({ data }: WalletProfileProps) {
                   contentStyle={{ backgroundColor: '#1a1a3a', border: '1px solid #2d2d4f', borderRadius: '12px', color: '#ffffff' }}
                   itemStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                   labelStyle={{ display: 'none' }}
-                  formatter={(val: number) => {
+                  formatter={(val: any) => {
                     const totalVal = walletCategories.reduce((sum, d) => sum + d.value, 0);
-                    return `${((val / totalVal) * 100).toFixed(1)}%`;
+                    return `${((Number(val) / totalVal) * 100).toFixed(1)}%`;
                   }}
                 />
                 <Legend 
