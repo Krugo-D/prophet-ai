@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "yarn"]
+
+[phases.install]
+cmds = ["echo 'This file forces Nixpacks usage'"]
+
+[phases.build]
+cmds = ["echo 'Build will be handled by service-specific nixpacks.toml'"]
+
+[start]
+cmd = "echo 'Start command set in railway.json'"
